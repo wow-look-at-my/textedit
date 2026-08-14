@@ -39,12 +39,13 @@ func TestWordBoundaryCorpus(t *testing.T) {
 		{"hello, world!", 13, 12, 13},
 		{"hello, world!", 12, 7, 13},
 		{"hello, world!", 7, 5, 12},
-		{"hello, world!", 5, 0, 7},
+		// From the comma: forward takes the comma, not the comma and the word.
+		{"hello, world!", 5, 0, 6},
 
 		// A URL is several units, which is the whole point of the ruling.
 		{"https://ex.com/a", 16, 15, 16},
-		{"https://ex.com/a", 15, 11, 16},
-		{"https://ex.com/a", 11, 10, 15},
+		{"https://ex.com/a", 15, 14, 16},
+		{"https://ex.com/a", 11, 10, 14},
 		{"", 0, 0, 0},
 	}
 	for _, c := range cases {

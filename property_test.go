@@ -98,7 +98,6 @@ func TestPropertyUndoToEmptyThenRedoToEnd(t *testing.T) {
 			b.Do(op)
 		}
 		final := b.Text()
-		finalCursor := b.Cursor()
 
 		steps := 0
 		for b.CanUndo() {
@@ -113,8 +112,9 @@ func TestPropertyUndoToEmptyThenRedoToEnd(t *testing.T) {
 			b.Do(Op{Verb: Redo})
 			checkInvariants(t, b)
 		}
+		// Text, exactly. Not the cursor: redo restores the cursor its own edit
+		// left, and the stream may have moved on after the last edit.
 		require.Equal(t, final, b.Text(), "redo reproduces the final text exactly")
-		require.Equal(t, finalCursor, b.Cursor(), "redo reproduces the final cursor")
 	}
 }
 

@@ -280,8 +280,12 @@ func TestDocSliceAndAdvance(t *testing.T) {
 		Start: Position{Line: 1, Col: 1},
 		End:   Position{Line: 1, Col: 3},
 	}))
-	assert.Equal(t, Position{Line: 1, Col: 1}, d.advance(Position{Line: 0, Col: 2}, "x\ny"))
-	assert.Equal(t, Position{Line: 0, Col: 4}, d.advance(Position{Line: 0, Col: 2}, "xy"))
 	assert.Equal(t, Position{Line: 2, Col: 5}, d.end())
+
+	// advance walks over text the document already holds, which is how the
+	// undo path re-derives the range an edit inserted.
+	held := newDoc("onexy\ntwo")
+	assert.Equal(t, Position{Line: 0, Col: 5}, held.advance(Position{Line: 0, Col: 3}, "xy"))
+	assert.Equal(t, Position{Line: 1, Col: 1}, held.advance(Position{Line: 0, Col: 3}, "xy\nt"))
 	assert.Equal(t, 2, d.colAtByte(0, 2))
 }

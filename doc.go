@@ -165,7 +165,9 @@ func (d *doc) replace(r Range, s string) Position {
 	return Position{Line: endLine, Col: d.colAtByte(endLine, endByte)}
 }
 
-// advance returns the position s past p, as if s had been inserted there.
+// advance returns the position just past s, for a document that already holds
+// s at p. That is what the history path needs: the range an entry's text now
+// occupies.
 func (d *doc) advance(p Position, s string) Position {
 	nl := strings.Count(s, "\n")
 	line := p.Line + nl
