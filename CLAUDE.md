@@ -71,8 +71,9 @@ is the most opinionated thing here.
 
 Recorded so nobody has to re-derive them; each is the least-surprising answer, not a preference.
 
-- `Paste` with `Op.Text` set inserts that text and leaves the slot alone (the spec's `Op` comment lists `Text` for
-  `Paste`); with `Text` empty it inserts the slot.
+- `Paste` reads the slot and ignores `Op.Text`. The spec contradicted itself here (its prose said slot, its `Op`
+  field comment listed `Text` for `Paste`) and was resolved toward the prose: text a host already holds goes in
+  through `InsertText`, so the slot has one writer and one reader.
 - A bare motion collapses the selection **and** moves, per the spec's wording — not the GUI habit of collapsing to the
   selection edge without moving.
 - `Up`/`Down` keep a sticky goal column, and at the first/last row they stay put, which is what lets a host bind

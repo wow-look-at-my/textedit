@@ -91,7 +91,7 @@ var verbTable = []VerbInfo{
 
 	{Name: "cut", Verb: Cut},
 	{Name: "copy", Verb: Copy},
-	{Name: "paste", Verb: Paste, TakesText: true},
+	{Name: "paste", Verb: Paste},
 
 	{Name: "selectAll", Verb: SelectAll},
 	{Name: "selectNone", Verb: SelectNone},

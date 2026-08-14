@@ -57,14 +57,12 @@ func (b *Buffer) Do(op Op) Change {
 		b.clip = b.d.slice(b.selection())
 		return b.noop(before)
 	case Paste:
-		s := op.Text
-		if s == "" {
-			s = b.clip
-		}
-		if s == "" {
+		// The slot is the only source: text the host already holds goes in through
+		// InsertText, so the slot has one writer and one reader.
+		if b.clip == "" {
 			return b.noop(before)
 		}
-		return b.edit(b.target(), strings.Repeat(s, n))
+		return b.edit(b.target(), strings.Repeat(b.clip, n))
 
 	case SelectAll:
 		b.anchor = Position{}

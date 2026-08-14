@@ -49,7 +49,7 @@ func TestVerbGroupsMatchTheSpecification(t *testing.T) {
 		}
 	}
 	assert.Equal(t, 13, motions, "13 motion verbs, all accepting Extend")
-	assert.Equal(t, 2, takesText, "InsertText and Paste read Op.Text")
+	assert.Equal(t, 1, takesText, "InsertText is the only verb that reads Op.Text")
 	assert.Equal(t, 3, takesPos, "MoveTo, SelectWordAt and SelectParagraphAt read Op.Pos")
 
 	for _, v := range []Verb{Left, Right, Up, Down, WordLeft, WordRight, LineStart,

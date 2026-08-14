@@ -7,7 +7,7 @@ package textedit
 // only by the verbs that declare them in Verbs().
 type Op struct {
 	Verb   Verb
-	Text   string   // InsertText, Paste
+	Text   string   // InsertText only
 	Pos    Position // MoveTo, SelectWordAt, SelectParagraphAt
 	N      int      // repeat count; 0 and 1 both mean once
 	Extend bool     // any motion verb: move the selection's free end instead of collapsing
