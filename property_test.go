@@ -97,6 +97,12 @@ func TestPropertyUndoToEmptyThenRedoToEnd(t *testing.T) {
 		for _, op := range randomOps(rng, 40) {
 			b.Do(op)
 		}
+		// Reach the end of history first: a stream that ended on an undo left
+		// entries on the redo stack, and redoing everything below would
+		// legitimately replay those too.
+		for b.CanRedo() {
+			b.Do(Op{Verb: Redo})
+		}
 		final := b.Text()
 
 		steps := 0
