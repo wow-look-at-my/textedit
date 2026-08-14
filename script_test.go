@@ -153,8 +153,8 @@ func TestScriptClipboard(t *testing.T) {
 	t.Run("paste replaces the selection", func(t *testing.T) {
 		runScript(t, New(), []step{
 			{`type("foo bar")`, `foo bar|`},
-			{`selectWordAt(0)`, `foo| sel=0:0-0:3`},
-			{`copy`, `foo| sel=0:0-0:3 clip="foo"`},
+			{`selectWordAt(0)`, `foo| bar sel=0:0-0:3`},
+			{`copy`, `foo| bar sel=0:0-0:3 clip="foo"`},
 			{`selectWordAt(4)`, `foo bar| sel=0:4-0:7 clip="foo"`},
 			{`paste`, `foo foo| clip="foo"`},
 		})
@@ -302,8 +302,10 @@ func TestScriptVisualVersusParagraph(t *testing.T) {
 			{`type("one\ntwo\nthree")`, "one\ntwo\nthree|"},
 			{`up`, "one\ntwo|\nthree"},
 			{`up`, "one|\ntwo\nthree"},
-			{`down(2)`, "one\ntwo\nthr|ee"},
-			{`down`, "one\ntwo\nthr|ee"},
+			// The goal column is the one the run started from, not the column
+			// the short line clamped it to.
+			{`down(2)`, "one\ntwo\nthree|"},
+			{`down`, "one\ntwo\nthree|"},
 		})
 	})
 
@@ -439,22 +441,23 @@ func TestScriptTransforms(t *testing.T) {
 }
 
 func TestScriptUnicode(t *testing.T) {
-	t.Run("motion is by grapheme cluster", func(t *testing.T) {
+	t.Run("a base plus a combining mark is one cluster", func(t *testing.T) {
 		runScript(t, New(), []step{
-			{`type("éx")`, "éx|"},
-			{`left`, "é|x"},
-			{`left`, "|éx"},
-			{`right`, "é|x"},
-			{`deleteForward`, "é|"},
+			{`type("e\u0301x")`, "e\u0301x|"},
+			{`left`, "e\u0301|x"},
+			{`left`, "|e\u0301x"},
+			{`right`, "e\u0301|x"},
+			{`deleteForward`, "e\u0301|"},
 			{`deleteBack`, `|`},
 		})
 	})
 
-	t.Run("a family emoji is one cluster", func(t *testing.T) {
+	t.Run("a ZWJ emoji sequence is one cluster", func(t *testing.T) {
 		runScript(t, New(), []step{
-			{`type("a\U0001F469‍\U0001F467b")`, "a👩‍👧b|"},
-			{`left(2)`, "a|👩‍👧b"},
-			{`deleteForward`, `ab|`},
+			{`type("a\U0001F469\u200D\U0001F467b")`, "a\U0001F469\u200D\U0001F467b|"},
+			{`left(2)`, "a|\U0001F469\u200D\U0001F467b"},
+			// The whole sequence goes in one press, and the cursor stays put.
+			{`deleteForward`, `a|b`},
 		})
 	})
 }
