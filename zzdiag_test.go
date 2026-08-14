@@ -23,9 +23,9 @@ func TestZZDiag(t *testing.T) {
 			b.Do(Op{Verb: Redo})
 		}
 		if b.Text() != final {
-			t.Logf("seed %d: final=%q emptied=%q redoDepth=%d after=%q", seed, final, emptied, nredo, b.Text())
+			t.Errorf("seed %d: final=%q emptied=%q redoDepth=%d after=%q", seed, final, emptied, nredo, b.Text())
 			for i, op := range ops {
-				t.Logf("  %2d %s text=%q pos=%v extend=%v n=%d", i, op.Verb, op.Text, op.Pos, op.Extend, op.N)
+				t.Errorf("  %2d %s text=%q pos=%v extend=%v n=%d", i, op.Verb, op.Text, op.Pos, op.Extend, op.N)
 			}
 			return
 		}
