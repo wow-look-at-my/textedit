@@ -160,14 +160,25 @@ func TestScriptClipboard(t *testing.T) {
 		})
 	})
 
-	t.Run("paste with explicit text leaves the slot alone", func(t *testing.T) {
+	// Op.Text belongs to InsertText. A host inserting text it already holds -- a
+	// bracketed paste off the terminal, say -- uses InsertText, so the slot has one
+	// writer and one reader.
+	t.Run("paste ignores Op.Text and reads the slot", func(t *testing.T) {
 		runScript(t, New(), []step{
 			{`type("a")`, `a|`},
 			{`selectAll`, `a| sel=0:0-0:1`},
 			{`copy`, `a| sel=0:0-0:1 clip="a"`},
 			{`selectNone`, `a| clip="a"`},
-			{`paste("zz")`, `azz| clip="a"`},
-			{`paste`, `azza| clip="a"`},
+			{`paste("zz")`, `aa| clip="a"`},
+			{`paste`, `aaa| clip="a"`},
+		})
+	})
+
+	t.Run("paste with an empty slot does nothing, text or not", func(t *testing.T) {
+		runScript(t, New(), []step{
+			{`type("a")`, `a|`},
+			{`paste`, `a|`},
+			{`paste("zz")`, `a|`},
 		})
 	})
 }
