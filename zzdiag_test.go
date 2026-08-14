@@ -1,8 +1,12 @@
 package textedit
 
 import (
+	"fmt"
 	"math/rand"
+	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestZZDiag(t *testing.T) {
@@ -10,8 +14,11 @@ func TestZZDiag(t *testing.T) {
 		rng := rand.New(rand.NewSource(seed))
 		b := New(WithWidth(1 + rng.Intn(12)))
 		ops := randomOps(rng, 40)
+		var log []string
 		for _, op := range ops {
 			b.Do(op)
+			log = append(log, fmt.Sprintf("%s(text=%q pos=%v ext=%v n=%d) -> %q undo=%d redo=%d",
+				op.Verb, op.Text, op.Pos, op.Extend, op.N, b.Text(), len(b.undo), len(b.redo)))
 		}
 		final := b.Text()
 		for b.CanUndo() {
@@ -22,12 +29,7 @@ func TestZZDiag(t *testing.T) {
 		for b.CanRedo() {
 			b.Do(Op{Verb: Redo})
 		}
-		if b.Text() != final {
-			t.Errorf("seed %d: final=%q emptied=%q redoDepth=%d after=%q", seed, final, emptied, nredo, b.Text())
-			for i, op := range ops {
-				t.Errorf("  %2d %s text=%q pos=%v extend=%v n=%d", i, op.Verb, op.Text, op.Pos, op.Extend, op.N)
-			}
-			return
-		}
+		require.Equalf(t, final, b.Text(), "seed %d emptied=%q redoDepth=%d\n%s",
+			seed, emptied, nredo, strings.Join(log, "\n"))
 	}
 }
